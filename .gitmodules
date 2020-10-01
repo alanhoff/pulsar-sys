@@ -1,0 +1,4 @@
+[submodule "pulsar"]
+	path = pulsar
+	url = https://github.com/apache/pulsar
+	branch = branch-2.6

@@ -1,15 +1,28 @@
 on: [push, pull_request]
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
         run: |
-          apt update && apt install -y curl
+          sudo apt update
+          sudo apt install -y curl llvm-dev libclang-dev clang openjdk-8-jre
           curl -O https://archive.apache.org/dist/pulsar/pulsar-2.6.1/DEB/apache-pulsar-client.deb
-          apt install -y apache-pulsar-client.deb && rm -rf apache-pulsar-client.deb
-          url --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          curl -O https://archive.apache.org/dist/pulsar/pulsar-2.6.1/DEB/apache-pulsar-client-dev.deb
+          sudo apt install -y ./apache-pulsar-client.deb ./apache-pulsar-client-dev.deb
+          rm -rf apache-pulsar-client.deb apache-pulsar-client-dev.deb
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-        run: cargo build -vv
+        run: |
+          source $HOME/.cargo/env
+          cargo build -vv
+      - name: Test
+        run: |
+          source $HOME/.cargo/env
+          curl -O http://mirror.nbtelecom.com.br/apache/pulsar/pulsar-2.6.1/apache-pulsar-2.6.1-bin.tar.gz
+          tar -zxvf apache-pulsar-2.6.1-bin.tar.gz
+          ./apache-pulsar-2.6.1/bin/pulsar standalone &
+          sleep 60
+          cargo test -vv -- --nocapture

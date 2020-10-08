@@ -1,0 +1,15 @@
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          apt update && apt install -y curl
+          curl -O https://archive.apache.org/dist/pulsar/pulsar-2.6.1/DEB/apache-pulsar-client.deb
+          apt install -y apache-pulsar-client.deb && rm -rf apache-pulsar-client.deb
+          url --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: cargo build -vv

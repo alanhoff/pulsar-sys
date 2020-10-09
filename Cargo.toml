@@ -1,6 +1,6 @@
 [package]
 name = "pulsar-sys"
-version = "2.6.0"
+version = "2.6.1"
 authors = ["Alan Hoffmeister <alanhoffmeister@gmail.com>"]
 edition = "2018"
 readme = "README.md"

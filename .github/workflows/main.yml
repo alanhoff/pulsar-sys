@@ -3,6 +3,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Install dependencies
         run: |
           export $(cat .env | xargs)
@@ -13,8 +15,6 @@ jobs:
           sudo apt install -y ./apache-pulsar-client.deb ./apache-pulsar-client-dev.deb
           rm -rf apache-pulsar-client.deb apache-pulsar-client-dev.deb
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-      - name: Checkout
-        uses: actions/checkout@v2
       - name: Build
         run: |
           source $HOME/.cargo/env

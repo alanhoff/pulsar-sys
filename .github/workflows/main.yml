@@ -5,10 +5,11 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
+          export $(cat .env | xargs)
           sudo apt update
           sudo apt install -y curl llvm-dev libclang-dev clang openjdk-8-jre
-          curl -O https://archive.apache.org/dist/pulsar/pulsar-2.6.1/DEB/apache-pulsar-client.deb
-          curl -O https://archive.apache.org/dist/pulsar/pulsar-2.6.1/DEB/apache-pulsar-client-dev.deb
+          curl -O https://archive.apache.org/dist/pulsar/pulsar-$PULSAR_VERSION/DEB/apache-pulsar-client.deb
+          curl -O https://archive.apache.org/dist/pulsar/pulsar-$PULSAR_VERSION/DEB/apache-pulsar-client-dev.deb
           sudo apt install -y ./apache-pulsar-client.deb ./apache-pulsar-client-dev.deb
           rm -rf apache-pulsar-client.deb apache-pulsar-client-dev.deb
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -20,9 +21,10 @@ jobs:
           cargo build -vv
       - name: Test
         run: |
+          export $(cat .env | xargs)
           source $HOME/.cargo/env
-          curl -O http://mirror.nbtelecom.com.br/apache/pulsar/pulsar-2.6.1/apache-pulsar-2.6.1-bin.tar.gz
-          tar -zxvf apache-pulsar-2.6.1-bin.tar.gz
-          ./apache-pulsar-2.6.1/bin/pulsar standalone &
+          curl -O http://mirror.nbtelecom.com.br/apache/pulsar/pulsar-$PULSAR_VERSION/apache-pulsar-$PULSAR_VERSION-bin.tar.gz
+          tar -zxvf apache-pulsar-$PULSAR_VERSION-bin.tar.gz
+          ./apache-pulsar-$PULSAR_VERSION/bin/pulsar standalone &
           sleep 60
           cargo test -vv -- --nocapture
